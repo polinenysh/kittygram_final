@@ -1,0 +1,38 @@
+version: '3'
+
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+  db:
+    image: postgres:13
+    env_file: .env.production  # отдельный env файл
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  backend:
+    image: polinenysh/kittygram_backend:latest
+    env_file: .env.production
+    restart: unless-stopped  # автоматический рестарт
+    volumes:
+      - static:/static
+      - media:/media
+
+  frontend:
+    image: polinenysh/kittygram_frontend:latest
+    env_file: .env.production
+    restart: unless-stopped
+    volumes:
+      - static:/static
+
+  gateway:
+    image: polinenysh/kittygram_gateway:latest
+    env_file: .env.production
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    volumes:
+      - static:/static
+      - media:/media
